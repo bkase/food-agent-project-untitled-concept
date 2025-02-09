@@ -1,0 +1,13 @@
+[package]
+name = "health"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+rig-core = "0.7"          # Rig is our LLM application framework
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+serde = "1.0"
+serde_json = "1.0"
+thiserror = "2.0"
+lazy_static = "1.5"
+
