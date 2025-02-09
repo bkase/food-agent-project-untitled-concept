@@ -10,7 +10,7 @@ The following conversation is recorded during everyday life by your little AI de
 
 
 
-
+```
 User: I don't eat pigs or any animals!
 Friend: Really? What are you vegetarian.
 User: Yeah I'm vegetarian, but not vegan.
@@ -24,16 +24,21 @@ Friend: Wow it must be hard to be allergic to tomatoes.
 User: Yes very hard.
 Friend: Do you have any dreams?
 User: Yeah of elephants.
+```
 
 
 
 Now the food agent runs
+
 Storing args StoreFoodPrefArgs { dishes: [StoreFoodPrefArgsAux { dish: "meat", kind: "dislike" }, StoreFoodPrefArgsAux { dish: "scrambled eggs", kind: "love" }, StoreFoodPrefArgsAux { dish: "tomatoes", kind: "allergy" }] }
+
 FoodAgent success: true
 
 
 Now the diet agent runs
+
 Storing diet types StoreDietTypeArgs { diets: [StoreDietTypeArgsAux { diet_type: "vegetarian", follows: true }, StoreDietTypeArgsAux { diet_type: "vegan", follows: false }] }
+
 DietAgent response: true
 
 
@@ -49,7 +54,7 @@ Later the chef agent asks project untitled for your diet and food preferences
 The chef agent knows what ingredients are in your kitchen
 
 
-
+```
 Ingredients: 
       Tomatoes
       Pork
@@ -73,7 +78,7 @@ Ingredients:
       Ginger
       Soy Sauce
       Wasabi
-
+```
 
 
 Finally the chef agent can combine the info from project untitled about your food preferences and diet with the ingredients to suggest some recipes for you for your meal
