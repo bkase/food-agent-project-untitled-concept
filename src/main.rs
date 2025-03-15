@@ -184,14 +184,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let food_agent = client
         .agent("claude-3-5-sonnet-latest")
-        .preamble(&preamble)
+        .preamble(preamble)
         .tool(store_food)
         .max_tokens(2048)
         .build();
 
     let diet_agent = client
         .agent("claude-3-5-sonnet-latest")
-        .preamble(&preamble)
+        .preamble(preamble)
         .tool(store_diet)
         .max_tokens(2048)
         .build();
