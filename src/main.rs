@@ -1,10 +1,6 @@
-use rig::{completion::Prompt, providers::anthropic};
-use rig::{
-    completion::ToolDefinition,
-    tool::Tool,
-};
-use serde;
 use lazy_static::lazy_static;
+use rig::{completion::Prompt, providers::anthropic};
+use rig::{completion::ToolDefinition, tool::Tool};
 
 struct MockProjectUntitled {
     food_prefs: Vec<StoreFoodPrefArgsAux>,
@@ -37,19 +33,20 @@ impl MockProjectUntitled {
 }
 
 lazy_static! {
-    static ref GLOBAL_MOCK_PROJECT: tokio::sync::Mutex<MockProjectUntitled> = tokio::sync::Mutex::new(MockProjectUntitled::new());
+    static ref GLOBAL_MOCK_PROJECT: tokio::sync::Mutex<MockProjectUntitled> =
+        tokio::sync::Mutex::new(MockProjectUntitled::new());
 }
 #[derive(Debug, serde::Deserialize)]
 struct StoreFoodPrefArgsAux {
     #[allow(dead_code)]
     dish: String,
     #[allow(dead_code)]
-    kind: String
+    kind: String,
 }
 
 #[derive(Debug, serde::Deserialize)]
 struct StoreFoodPrefArgs {
-    dishes: Vec<StoreFoodPrefArgsAux>
+    dishes: Vec<StoreFoodPrefArgsAux>,
 }
 
 #[derive(Debug, serde::Deserialize)]
@@ -57,12 +54,12 @@ struct StoreDietTypeArgsAux {
     #[allow(dead_code)]
     diet_type: String,
     #[allow(dead_code)]
-    follows: bool
+    follows: bool,
 }
 
 #[derive(Debug, serde::Deserialize)]
 struct StoreDietTypeArgs {
-    diets: Vec<StoreDietTypeArgsAux>
+    diets: Vec<StoreDietTypeArgsAux>,
 }
 
 #[derive(Debug, thiserror::Error)]
@@ -87,34 +84,33 @@ impl Tool for StoreFoodPref {
             name: Self::NAME.to_string(),
             description: "Store food preferences".to_string(),
             parameters: serde_json::json!(
-                {
-                    "type": "object",
-                    "properties": {
-                        "dishes": {
-                            "type": "array",
-                            "description": "A list of zero or more dishes and kinds to store",
-                            "items": {
-                                "type": "object",
-                                "properties": {
-                                    "dish": {
-                                        "type": "string",
-                                        "description": "The name of the dish or food for which we are learning about a preference"
-                                    },
-                                    "kind": {
-                                        "type": "string",
-                                        "description": "The kind of food preference that this is",
-                                        "enum": ["allergy", "intolerance", "dislike", "not_sure", "like", "love"]
-                                    }
+            {
+                "type": "object",
+                "properties": {
+                    "dishes": {
+                        "type": "array",
+                        "description": "A list of zero or more dishes and kinds to store",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "dish": {
+                                    "type": "string",
+                                    "description": "The name of the dish or food for which we are learning about a preference"
                                 },
-                                "required": ["dish", "kind"]
-                            }
+                                "kind": {
+                                    "type": "string",
+                                    "description": "The kind of food preference that this is",
+                                    "enum": ["allergy", "intolerance", "dislike", "not_sure", "like", "love"]
+                                }
+                            },
+                            "required": ["dish", "kind"]
                         }
-                    },
-                    "required": ["dishes"]
-                })
+                    }
+                },
+                "required": ["dishes"]
+            }),
         }
     }
-
 
     async fn call(&self, args: Self::Args) -> Result<Self::Output, Self::Error> {
         println!("Storing args {:?}", args);
@@ -138,31 +134,31 @@ impl Tool for StoreDietType {
             name: Self::NAME.to_string(),
             description: "Store diet types".to_string(),
             parameters: serde_json::json!(
-                {
-                    "type": "object",
-                    "properties": {
-                        "diets": {
-                            "type": "array",
-                            "description": "A list of zero or more diet types and whether the user follows them",
-                            "items": {
-                                "type": "object",
-                                "properties": {
-                                    "diet_type": {
-                                        "type": "string",
-                                        "description": "The type of diet",
-                                        "enum": ["vegetarian", "vegan", "gluten-free", "pescatarian", "keto", "paleo"]
-                                    },
-                                    "follows": {
-                                        "type": "boolean",
-                                        "description": "Whether the user follows this diet"
-                                    }
+            {
+                "type": "object",
+                "properties": {
+                    "diets": {
+                        "type": "array",
+                        "description": "A list of zero or more diet types and whether the user follows them",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "diet_type": {
+                                    "type": "string",
+                                    "description": "The type of diet",
+                                    "enum": ["vegetarian", "vegan", "gluten-free", "pescatarian", "keto", "paleo"]
                                 },
-                                "required": ["diet_type", "follows"]
-                            }
+                                "follows": {
+                                    "type": "boolean",
+                                    "description": "Whether the user follows this diet"
+                                }
+                            },
+                            "required": ["diet_type", "follows"]
                         }
-                    },
-                    "required": ["diets"]
-                })
+                    }
+                },
+                "required": ["diets"]
+            }),
         }
     }
 
@@ -181,8 +177,8 @@ impl Tool for StoreDietType {
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let client = anthropic::Client::from_env();
 
-    let store_food = StoreFoodPref{};
-    let store_diet = StoreDietType{};
+    let store_food = StoreFoodPref {};
+    let store_diet = StoreDietType {};
 
     let preamble = "Your job is to extract facts about the user's food preferences from snippets of conversation that the user has either with himself or others around him. You will be fed conversation snippets. You do not need to provide any food preferences or diets, or you may learn about more than one at a time.";
 
@@ -230,7 +226,10 @@ User: Yeah of elephants.
 
     println!("Now the food agent runs");
     // Send a prompt to the model and await the response.
-    let prompt = format!("Here is the conversation to analyze:\n {}", conversation_snippet);
+    let prompt = format!(
+        "Here is the conversation to analyze:\n {}",
+        conversation_snippet
+    );
     let response = food_agent.prompt(&prompt).await?;
     println!("FoodAgent success: {}", response);
     println!("\n\nNow the diet agent runs");
@@ -278,13 +277,16 @@ User: Yeah of elephants.
     println!("Finally the chef agent can combine the info from project untitled about your food preferences and diet with the ingredients to suggest some recipes for you for your meal");
     println!("\n\n");
 
-    let prompt1 = format!("
+    let prompt1 = format!(
+        "
     Ingredients: {}
 
     Diets: {:?}
 
     Food Preferences: {:?}
-        ", ingredients, diets, food_prefs);
+        ",
+        ingredients, diets, food_prefs
+    );
     let response__ = meal_builder_agent.prompt(&prompt1).await?;
     println!("MealBuilder agent response: {}", response__);
 
@@ -293,7 +295,5 @@ User: Yeah of elephants.
     println!("\n\n");
     println!("The End");
 
-
     Ok(())
 }
-
